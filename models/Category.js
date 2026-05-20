@@ -1,13 +1,37 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
 
-const categorySchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    description: { type: String },
-    icon: { type: String },
-    mockId: { type: Number } // To help with seeding mapping
-  },
-  { timestamps: true }
-);
+module.exports = (sequelize) => {
+  const Category = sequelize.define('Category', {
+    CategoryID: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    CategoryName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    Description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    ParentCategoryID: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Category',
+        key: 'CategoryID',
+      },
+    },
+    Icon: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  }, {
+    timestamps: false,
+    tableName: 'Category',
+  });
 
-module.exports = mongoose.model('Category', categorySchema);
+  return Category;
+};
+

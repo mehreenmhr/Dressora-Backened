@@ -1,15 +1,17 @@
-const Category = require('../models/Category');
+const { Category } = require('../models');
 
 // @desc    Fetch all categories
 // @route   GET /api/categories
 // @access  Public
 const getCategories = async (req, res) => {
   try {
-    const categories = await Category.find({});
+    const categories = await Category.findAll();
     const formattedCategories = categories.map(c => ({
-      ...c._doc,
-      categoryID: c._id,
-      categoryName: c.name
+      categoryID: c.CategoryID,
+      categoryName: c.CategoryName,
+      description: c.Description,
+      icon: c.Icon,
+      parentCategoryID: c.ParentCategoryID
     }));
     res.json(formattedCategories);
   } catch (error) {

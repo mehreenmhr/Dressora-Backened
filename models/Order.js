@@ -1,38 +1,67 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
 
-const orderItemSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  quantity: { type: Number, required: true },
-  image: { type: String, required: true },
-  price: { type: Number, required: true },
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'Product',
-  },
-});
-
-const orderSchema = new mongoose.Schema(
-  {
-    user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
-    orderItems: [orderItemSchema],
-    shippingAddress: {
-      address: { type: String, required: true },
-      city: { type: String, required: true },
-      postalCode: { type: String, required: true },
-      country: { type: String, required: true },
+module.exports = (sequelize) => {
+  const Orders = sequelize.define('Orders', {
+    OrderID: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    paymentMethod: { type: String, required: true },
-    itemsPrice: { type: Number, required: true, default: 0.0 },
-    taxPrice: { type: Number, required: true, default: 0.0 },
-    shippingPrice: { type: Number, required: true, default: 0.0 },
-    totalPrice: { type: Number, required: true, default: 0.0 },
-    isPaid: { type: Boolean, required: true, default: false },
-    paidAt: { type: Date },
-    isDelivered: { type: Boolean, required: true, default: false },
-    deliveredAt: { type: Date },
-  },
-  { timestamps: true }
-);
+    CustomerID: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Customer',
+        key: 'CustomerID',
+      },
+    },
+    OrderDate: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    TotalAmount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0,
+    },
+    DiscountAmount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0,
+    },
+    TaxAmount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0,
+    },
+    FinalAmount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0,
+    },
+    OrderStatus: {
+      type: DataTypes.ENUM('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'),
+      defaultValue: 'pending',
+    },
+    ShippingAddressID: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Address',
+        key: 'AddressID',
+      },
+    },
+    BillingAddressID: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Address',
+        key: 'AddressID',
+      },
+    },
+  }, {
+    timestamps: false,
+    tableName: 'Orders',
+  });
 
-module.exports = mongoose.model('Order', orderSchema);
+  return Orders;
+};
+

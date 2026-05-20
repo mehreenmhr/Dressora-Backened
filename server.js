@@ -1,15 +1,18 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const connectDB = require('./config/db');
+const { connectDB } = require('./config/db');
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const userRoutes = require('./routes/userRoutes');
+const couponRoutes = require('./routes/couponRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const addressRoutes = require('./routes/addressRoutes');
 const cors = require('cors');
 
-// 1. Load Environment Variables (e.g., MongoDB URI, Port)
+// 1. Load Environment Variables (e.g., MySQL URI, Port)
 dotenv.config();
 
-// 2. Connect to our MongoDB Database
+// 2. Connect to our MySQL Database
 console.log('--- Database Connection ---');
 connectDB();
 
@@ -26,6 +29,9 @@ console.log('--- Registering API Routes ---');
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/coupons', couponRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/addresses', addressRoutes);
 
 // 5. Basic Welcome Route (to check if the server is alive)
 app.get('/', (req, res) => {
@@ -39,3 +45,6 @@ app.listen(PORT, () => {
   console.log(`📡 MODE: ${process.env.NODE_ENV || 'development'}`);
   console.log('-----------------------------\n');
 });
+
+// Nodemon reload trigger
+

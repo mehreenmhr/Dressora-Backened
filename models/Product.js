@@ -1,72 +1,80 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
 
-/**
- * PRODUCT MODEL
- * Defines the schema for our clothing items in MongoDB.
- * Includes validation and relationships to Categories and Sellers.
- */
-const productSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Product name is required'],
-    trim: true
-  },
-  description: {
-    type: String,
-    required: [true, 'Description is required']
-  },
-  price: {
-    type: Number,
-    required: [true, 'Price is required'],
-    default: 0
-  },
-  stockQuantity: {
-    type: Number,
-    required: [true, 'Stock quantity is required'],
-    default: 0
-  },
-  sku: {
-    type: String,
-    required: true,
-    unique: true // Ensures no two products have the same SKU
-  },
-  // Relationship: Each product belongs to one Category
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    required: true
-  },
-  // Relationship: Each product is listed by one Seller (User)
-  seller: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  image: {
-    type: String,
-    required: true
-  },
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  rating: {
-    type: Number,
-    default: 0,
-    min: 0,
-    max: 5
-  },
-  reviewCount: {
-    type: Number,
-    default: 0
-  },
-  discount: {
-    type: Number,
-    default: 0 // Percentage discount
-  },
-  mockId: { type: Number } // To help with seeding
-}, {
-  timestamps: true // Automatically creates 'createdAt' and 'updatedAt' fields
-});
+module.exports = (sequelize) => {
+  const Product = sequelize.define('Product', {
+    ProductID: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    ProductName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    Description: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    BasePrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0,
+    },
+    StockQuantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    SKU: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    IsActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    CreatedAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    Image: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    Rating: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0,
+    },
+    ReviewCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    Discount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    CategoryID: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Category',
+        key: 'CategoryID',
+      },
+    },
+    SellerID: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Seller',
+        key: 'SellerID',
+      },
+    },
+  }, {
+    timestamps: false,
+    tableName: 'Product',
+  });
 
-module.exports = mongoose.model('Product', productSchema);
+  return Product;
+};
+
